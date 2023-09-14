@@ -46,8 +46,10 @@ def main():
     print(f'Your dict_epi_count: {dict_epi_count}')
 
     #merging dicts
-    dict_master = merge_dicts(dict_ca_filter,dict_epi) #31723 samples
-    dict_master_pred = merge_dicts(dict_ca_pred_filter,dict_epi_pred) #40796 samples #31723
+    # dict_master = merge_dicts(dict_ca_filter,dict_epi) #31723 samples
+    # dict_master_pred = merge_dicts(dict_ca_pred_filter,dict_epi_pred) #40796 samples #31723
+    dict_master = merge_dicts(dict_ca,dict_epi) # to complete non core samples
+    dict_master_pred = merge_dicts(dict_ca_pred,dict_epi_pred) # to complete non core samples
 
     print(f'Your dict_master (ca+epiatlas) and dict_master_pred (ca+epiatlas) to be used with your matrix contains {len(dict_master)} and {len(dict_master_pred)}, respectively.')
 
@@ -68,7 +70,7 @@ def main():
 if __name__ == "__main__":
 
     parser = argparse.ArgumentParser(
-        description="A script to filter a matrix and give the median and average of specific samples per assay (e.g K4me3, K4me1)."
+        description="A script to filter a matrix and give the median and average of specific samples."
     )
 
 

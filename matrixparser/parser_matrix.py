@@ -15,6 +15,15 @@ def matrix_median_average(matrix, dict_master, dict_master_pred, dict_epi): #cre
     matrix_100kb.set_index('Unnamed: 0', inplace=True)
     matrix_100kb.index = matrix_100kb.index.str.replace('-bw','')
 
+    #other replacements
+    matrix_100kb.index = matrix_100kb.index.str.replace(r"_\d+\w+", "", regex=True)
+    matrix_100kb.columns = matrix_100kb.columns.str.replace(r"_\d+\w+", "", regex=True)
+    
+    # matrix_100kb.columns = matrix_100kb.columns.str.replace("_0blklst_winsorized-0-0.001", "")
+    # matrix_100kb.index = matrix_100kb.index.str.replace("_0blklst_winsorized-0-0.001", "")
+    # matrix_100kb.columns = matrix_100kb.columns.str.replace("_0blklst", "")
+    # matrix_100kb.index = matrix_100kb.index.str.replace("_0blklst", "")
+
 
     #list_assay to calculate median and average
     list_assay = ['h3k4me1','h3k4me3','h3k27me3',
@@ -25,8 +34,8 @@ def matrix_median_average(matrix, dict_master, dict_master_pred, dict_epi): #cre
     df_filled = pd.DataFrame(columns=['md5sum'], index=matrix_100kb.index) #worked
     df_filled['md5sum'] = matrix_100kb.index #same order 
     df_filled['md5sum'] = df_filled['md5sum'].str.replace('-bw', '') #replacing -bw to avoid match problems 
-    df_filled['assay'] = df_filled['md5sum'].map(dict_master)
-    df_filled['predicted_assay'] = df_filled['md5sum'].map(dict_master_pred)
+    df_filled['assay'] = df_filled['md5sum'].map(dict_master) #to fill all samples: create dict master using dict_ca total
+    df_filled['predicted_assay'] = df_filled['md5sum'].map(dict_master_pred) #to fill all pred: create dict master using dict_ca_pred total
 
 
     #===================IF YOU WANT AVERAGE AND MEDIAN OF ALL SAMPLES, USE DICT MASTER==============
@@ -42,15 +51,17 @@ def matrix_median_average(matrix, dict_master, dict_master_pred, dict_epi): #cre
 
             #cols = [k for k,v in dict_master_matrix.items() if v == a]
             cols = [k for k,v in dict_epi.items() if v == a]
-            print(f'target:{a}')
+            print(f'target:{a}', 'number of cols to be used on mean and median:',len(cols))
+
     
-            df_filled[a+'_average'] = matrix_100kb[cols].mean(axis=1) #all cols from the same target - median per sample
+            df_filled[a+'_average'] = matrix_100kb[cols].mean(axis=1) #all cols from the same target - avg per sample
             df_filled[a+'_median'] = matrix_100kb[cols].median(axis=1) #all cols from the same target - median per sample  
 
 
         except:
 
             print(f'this target does not exist:{a}. Please check your assay list.')
+            print('error', len(cols))
     
             df_filled[a+'_average'] = 'no target'
             df_filled[a+'_median'] = 'no target'
